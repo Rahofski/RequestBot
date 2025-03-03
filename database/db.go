@@ -1,16 +1,16 @@
 package database
 
+import (
+    models "fixitpolytech/internal/models"
+)
 //метод для получения всех корпусовэ(нужно реализовать через подключение к бд)
 
-
-type Building struct{
-    name string
-    adress string
+func GetAllBuildings() []models.Building{
+    return []models.Building{
+        {Name: "11 корпус", Address: "улица Обручевых, 1", BldType: "stud"},
+        {Name: "9 корпус", Address: "Политехническая улица, 21", BldType: "stud"},
+        {Name: "6 общага", Address: "Улица Харченко, 16", BldType: "dorm"},
+    }
 }
 
-func GetAllBuildings() []Building{
-    return []Building{{"11 корпус", "улица Обручевых, 1"}, {"9 корпус", "Политехническая улица, 21"}}
-}
-
-//метод для отправки заявки
 
