@@ -3,10 +3,10 @@ package models
 import "time"
 
 type Request struct {
-	id          int
-	description string
-	img         string
-	status      string
-	building    Building
-	time        time.Time
+	Id          int
+	Description string
+	Img         string
+	Status      string
+	Building    Building
+	Time        time.Time
 }

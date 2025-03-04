@@ -7,9 +7,10 @@ import (
 
 func GetAllBuildings() []models.Building{
     return []models.Building{
-        {Name: "11 корпус", Address: "улица Обручевых, 1", BldType: "stud"},
-        {Name: "9 корпус", Address: "Политехническая улица, 21", BldType: "stud"},
-        {Name: "6 общага", Address: "Улица Харченко, 16", BldType: "dorm"},
+        {Name: "11 корпус", EngName: "11corp", Address: "улица Обручевых, 1", BldType: "stud"},
+        {Name: "9 корпус", EngName: "9corp", Address: "Политехническая улица, 21", BldType: "stud"},
+        {Name: "6 общага", EngName: "6dorm", Address: "Улица Харченко, 16", BldType: "dorm"},
+        {Name: "3 общага", EngName: "3dorm", Address: "Лесной проспект, 65к3", BldType: "dorm"},
     }
 }
 
