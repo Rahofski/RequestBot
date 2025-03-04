@@ -10,3 +10,16 @@ type Request struct {
 	Building    Building
 	Time        time.Time
 }
+
+/*type Request struct {
+	RequestID      int      `json:"request_id"`
+	BuildingID     int      `json:"building_id"`
+	FieldID        int      `json:"field_id"`
+	UserID         int      `json:"user_id"`
+	AdditionalText string   `json:"additional_text"`
+	Status         string   `json:"status"`
+	Photos         []string `json:"photos"`
+	Time		   time.Time `json:"time"`
+}*/
+//ID по хорошему надо убрать и здесь и в handler, потому что бд сама задает ID
+//Нужно посмотреть как он будет форматы time совмещать (формат бд и формат go)
