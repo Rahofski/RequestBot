@@ -9,6 +9,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"fixitpolytech/internal/handlers"
+	"fixitpolytech/internal/services"
 )
 
 func main() {
@@ -35,7 +36,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	handlers.SetupCommands(bot)
+
+
+	requestService := services.NewRequestService()
+    handlers.SetupCommands(bot, requestService)
 
 	bot.Start()
 }
