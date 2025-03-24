@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
-	"gopkg.in/telebot.v3"
 	"github.com/joho/godotenv"
+	"gopkg.in/telebot.v3"
 
 	"fixitpolytech/internal/handlers"
 	"fixitpolytech/internal/services"
@@ -36,10 +36,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-
-
 	requestService := services.NewRequestService()
     handlers.SetupCommands(bot, requestService)
 
 	bot.Start()
+
 }

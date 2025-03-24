@@ -10,3 +10,4 @@ func GetFileURL(bot *telebot.Bot, fileID string) (string, error) {
 
 	return "https://api.telegram.org/file/bot" + bot.Token + "/" + file.FilePath, nil
 }
+
