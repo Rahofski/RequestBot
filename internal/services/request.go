@@ -17,12 +17,11 @@ func NewRequestService() *RequestService {
 
 func (s *RequestService) CreateRequest(buildingID int, fieldID int, additionalText string, photos []string) models.Request {
     request := models.Request{
-        RequestID:     len(s.requests) + 1,
         BuildingID:    buildingID,
         FieldID:       fieldID,
         AdditionalText: additionalText,
         Photos:        photos,
-        Status:        "in process",
+        Status:        "not taken",
         Time:          time.Now(),
     }
     s.requests = append(s.requests, request)

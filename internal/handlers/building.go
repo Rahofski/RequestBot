@@ -12,11 +12,11 @@ import (
 func RegisterBuildingHandlers(bot *telebot.Bot) {
     // Обработчики для статических кнопок (учебный корпус и общежитие)
     bot.Handle(&telebot.InlineButton{Unique: "stud_building"}, func(c telebot.Context) error {
-        return sendBuildingOptions(c, "stud")
+        return sendBuildingOptions(c, "корпус")
     })
 
     bot.Handle(&telebot.InlineButton{Unique: "dorm_building"}, func(c telebot.Context) error {
-        return sendBuildingOptions(c, "dorm")
+        return sendBuildingOptions(c, "общежитие")
     })
 
     // Обработчики для динамических кнопок зданий
@@ -54,6 +54,18 @@ func sendBuildingOptions(c telebot.Context, bldType string) error {
 
     _ = c.Respond()
     return c.Send("Выберите конкретное здание:", keyboard)
+}
+
+func GetBuildingNameByID(buildingID int) (string, error) {
+    buildings := database.GetAllBuildings() // Получаем список всех зданий
+
+    for _, building := range buildings {
+        if building.BuildingID == buildingID {
+            return building.Name, nil // Нашли здание, возвращаем его имя
+        }
+    }
+
+    return "", fmt.Errorf("здание с ID %d не найдено", buildingID) // Если здание не найдено
 }
 
 func ParseBldButton(c telebot.Context, bld models.Building) error {

@@ -105,8 +105,13 @@ func HandlePhoto(c telebot.Context, requestService *services.RequestService) err
 		return c.Send("Ошибка: заявка не найдена")
 	}
 
+	if len(req.Photos) > 0 {
+		return c.Send("Вы уже прикрепили фотографию. Нельзя прикрепить больше одной.")
+	}
+
 	photo := c.Message().Photo
 	fileURL, err := GetFileURL(c.Bot(), photo.FileID)
+
 	if err != nil {
 		log.Printf("Не удалось получить url фото")
 	} else {
@@ -126,31 +131,49 @@ func CompleteRequest(c telebot.Context, requestService *services.RequestService)
 		return c.Send("Ошибка: заявка не найдена")
 	}
 
-	//Отправка данных на сервер
-	if err := database.PostRequest(req); err != nil {
-		c.Send("Ошибка: Не удалось отправить заявку на сервер")
-	}
+	
 
 	// Создаем заявку в сервисе
 	request := requestService.CreateRequest(req.BuildingID, req.FieldID, req.AdditionalText, req.Photos)
+
+	build, err := GetBuildingNameByID(request.BuildingID)
+	if err != nil {
+		return c.Send("Ошибка: Не удалось получить информацию о здании")
+	}
+
+	status := request.Status
+
+	if status == "not taken" {
+		status = "В обработке"
+	}
+	if status == "done" {
+		status = "Выполнена"
+	}
+	if status == "in progress" {
+		status = "В процессе устранения"
+	}
+
+	//Отправка данных на сервер
+	if err := database.PostRequest(&request); err != nil {
+		c.Send("Ошибка: Не удалось отправить заявку на сервер")
+	}
 
 	// Очищаем сессию пользователя
 	sessionMutex.Lock()
 	delete(sessions, c.Sender().ID)
 	sessionMutex.Unlock()
 
+
+
 	msg := fmt.Sprintf(
-		"Заявка #%d создана!\n"+
-			"Здание: %d\n"+
-			"URL фото: %s\n"+
+		"Заявка создана!\n"+
+			"Здание: %s\n"+
 			"Описание: %s\n"+
 			"Статус: %s\n"+
 			"Время: %s",
-		request.RequestID,
-		request.BuildingID,
-		request.Photos,
+		build,
 		request.AdditionalText,
-		request.Status,
+		status,
 		request.Time.Format(time.RFC1123),
 	)
 
