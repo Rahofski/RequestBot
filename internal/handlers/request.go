@@ -154,7 +154,8 @@ func CompleteRequest(c telebot.Context, requestService *services.RequestService)
 	}
 
 	//Отправка данных на сервер
-	if err := database.PostRequest(&request); err != nil {
+	requestID, err := database.PostRequest(&request);
+	if err != nil {
 		c.Send("Ошибка: Не удалось отправить заявку на сервер")
 	}
 
@@ -167,10 +168,12 @@ func CompleteRequest(c telebot.Context, requestService *services.RequestService)
 
 	msg := fmt.Sprintf(
 		"Заявка создана!\n"+
+			"ID заявки: %d\n"+
 			"Здание: %s\n"+
 			"Описание: %s\n"+
 			"Статус: %s\n"+
 			"Время: %s",
+		requestID,
 		build,
 		request.AdditionalText,
 		status,

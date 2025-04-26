@@ -1,12 +1,15 @@
 package handlers
 
 import (
-    "fixitpolytech/internal/models"
-    "fixitpolytech/internal/services"
-    "log"
-    "sync"
+	"fixitpolytech/internal/models"
+	"fixitpolytech/internal/services"
+	"fixitpolytech/internal/database"
 
-    "gopkg.in/telebot.v3"
+	"log"
+	"strconv"
+	"sync"
+
+	"gopkg.in/telebot.v3"
 )
 
 var (
@@ -28,6 +31,7 @@ func SetupCommands(bot *telebot.Bot, requestService *services.RequestService) {
 
     bot.Handle("/start", StartHandler)
     bot.Handle("/report", ReportHandler)
+    bot.Handle("/getStatus", GetStatusHandler)
     bot.Handle("/help", HelpHandler)
 
     RegisterBuildingHandlers(bot)
@@ -53,6 +57,21 @@ func ReportHandler(c telebot.Context) error {
     return c.Send("Выберите тип здания, внутри которого возникла проблема:", keyboard)
 }
 
+func GetStatusHandler(c telebot.Context) error {
+    c.Send("Введите номер вашей заявки для получения статуса")
+    s := c.Text()
+    num, err := strconv.Atoi(s)
+	if err != nil {
+		return c.Send("Ошибка: Неверный формат номера заявки")
+	}
+    status, err := database.GetRequestStatus(num)
+    if err != nil {
+        return c.Send("Ошибка: Не удалось получить статус заявки")
+    }
+
+    return c.Send("Статус вашей заявки: " + status)
+}
+
 func HelpHandler(c telebot.Context) error {
-    return c.Send("Сервис по оставлению заявок на проблемы внутри Политеха! Введите команду /report для того, чтобы оставить вашу заявку")
+    return c.Send("Сервис по оставлению заявок на проблемы внутри Политеха! Введите команду /report для того, чтобы оставить вашу заявку, /getStatus для получения статуса вашей заявки, /help для получения помощи по работе с ботом")
 }
