@@ -3,10 +3,10 @@ package handlers
 import (
 	"fixitpolytech/internal/models"
 	"fixitpolytech/internal/services"
-	"fixitpolytech/internal/database"
+	_"fixitpolytech/internal/database"
 
 	"log"
-	"strconv"
+	_"strconv"
 	"sync"
 
 	"gopkg.in/telebot.v3"
@@ -15,6 +15,7 @@ import (
 var (
     sessions = make(map[int64]*models.Request) // Хранилище сессий (ключ — ID пользователя)
     sessionMutex sync.Mutex                    // Мьютекс для безопасного доступа к хранилищу
+    waitingForStatus = make(map[int64]bool)     // Для статуса заявки
 )
 
 func SetupCommands(bot *telebot.Bot, requestService *services.RequestService) {
@@ -22,6 +23,7 @@ func SetupCommands(bot *telebot.Bot, requestService *services.RequestService) {
         {Text: "report", Description: "Оставить заявку"},
         {Text: "help", Description: "Помощь"},
         {Text: "start", Description: "Запуск"},
+        {Text: "status", Description: "Получить статус заявки"},
     }
 
     err := bot.SetCommands(commands)
@@ -31,7 +33,7 @@ func SetupCommands(bot *telebot.Bot, requestService *services.RequestService) {
 
     bot.Handle("/start", StartHandler)
     bot.Handle("/report", ReportHandler)
-    bot.Handle("/getStatus", GetStatusHandler)
+    bot.Handle("/status", GetStatusHandler)
     bot.Handle("/help", HelpHandler)
 
     RegisterBuildingHandlers(bot)
@@ -58,18 +60,11 @@ func ReportHandler(c telebot.Context) error {
 }
 
 func GetStatusHandler(c telebot.Context) error {
-    c.Send("Введите номер вашей заявки для получения статуса")
-    s := c.Text()
-    num, err := strconv.Atoi(s)
-	if err != nil {
-		return c.Send("Ошибка: Неверный формат номера заявки")
-	}
-    status, err := database.GetRequestStatus(num)
-    if err != nil {
-        return c.Send("Ошибка: Не удалось получить статус заявки")
-    }
+    sessionMutex.Lock()
+    waitingForStatus[c.Sender().ID] = true // Ждём от пользователя номер заявки
+    sessionMutex.Unlock()
 
-    return c.Send("Статус вашей заявки: " + status)
+    return c.Send("Введите номер вашей заявки для получения статуса")
 }
 
 func HelpHandler(c telebot.Context) error {

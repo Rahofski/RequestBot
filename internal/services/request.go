@@ -15,7 +15,7 @@ func NewRequestService() *RequestService {
     }
 }
 
-func (s *RequestService) CreateRequest(buildingID int, fieldID int, additionalText string, photos []string) models.Request {
+func (s *RequestService) CreateRequest(buildingID int, fieldID int, additionalText string, photos string) models.Request {
     request := models.Request{
         BuildingID:    buildingID,
         FieldID:       fieldID,

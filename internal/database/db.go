@@ -12,10 +12,11 @@ import (
 
 //метод для получения всех корпусов(нужно реализовать через подключение к бд)
 func GetAllBuildings() []models.Building {
-	response, err := http.Get("http://25.24.120.207:8080/api/buildings")
+	response, err := http.Get("http://localhost:8080/api/buildings")
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	defer response.Body.Close()
 
 	body, err := io.ReadAll(response.Body)
@@ -37,7 +38,7 @@ func PostRequest(req *models.Request) (int, error) {
 		return 0, err
 	}
 	//Создаем POST-запрос
-	response, err := http.Post("http://25.24.120.207:8080/api/request/add", "application/json", bytes.NewBuffer(payload))
+	response, err := http.Post("http://localhost:8080/api/request/add", "application/json", bytes.NewBuffer(payload))
 	if err != nil {
 		log.Println("Ошибка при отправке запроса:", err)
 		return 0, err
@@ -63,14 +64,7 @@ func PostRequest(req *models.Request) (int, error) {
 }
 
 func GetRequestStatus(requestID int) (string, error) {
-	var requestResp models.RequestResponse
-	requestResp.RequestID = requestID
-	payload, err := json.Marshal(requestResp)
-	if err != nil {
-		log.Println("Ошибка при преобразовании данных в JSON:", err)
-		return "", err
-	}
-	response, err := http.Post("http://25.24.120.207:8080/api/request/add", "application/json", bytes.NewBuffer(payload))
+	response, err := http.Get("http://localhost:8080/api/status/" + fmt.Sprint(requestID))
 	if err != nil {
 		log.Println("Ошибка при отправке запроса:", err)
 		return "", err
@@ -92,7 +86,6 @@ func GetRequestStatus(requestID int) (string, error) {
 	} 
 
 	return responseData.Status, nil
-	
 
 }
 
