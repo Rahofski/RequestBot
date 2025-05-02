@@ -78,5 +78,5 @@ func ParseBldButton(c telebot.Context, bld models.Building) error {
     sessions[c.Sender().ID] = &req
     sessionMutex.Unlock()
 
-    return c.Send("Опишите проблему (уточните местоположение внутри здания, дайте дополнительную информацию и т.д.)")
+    return c.Send("Опишите проблему (уточните местоположение внутри здания, предоставьте дополнительную информацю и т.д.)")
 }
