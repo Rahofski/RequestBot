@@ -66,7 +66,7 @@ func PostRequest(req *models.Request) (int, error) {
 }
 
 func GetRequestStatus(requestID int) (string, error) {
-	response, err := http.Get(config.Backend_URL + "/status" + fmt.Sprint(requestID))
+	response, err := http.Get(config.Backend_URL + "/status/" + fmt.Sprint(requestID))
 	if err != nil {
 		log.Println("Ошибка при отправке запроса:", err)
 		return "", err

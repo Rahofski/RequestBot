@@ -8,9 +8,12 @@ import (
 	"fmt"
 	"log"
 	"strconv"
-	"time"
 
 	"gopkg.in/telebot.v3"
+)
+
+const (
+    MyDateTimeFormat = "02-01-2006 15:04:05"
 )
 
 func RegisterRequestHandlers(bot *telebot.Bot, requestService *services.RequestService) {
@@ -208,12 +211,12 @@ func CompleteRequest(c telebot.Context, requestService *services.RequestService)
 			"Здание: %s\n"+
 			"Описание: %s\n"+
 			"Статус: %s\n"+
-			"Время: %s",
+			"Дата: %s",
 		requestID,
 		build,
 		request.AdditionalText,
 		status,
-		request.Time.Format(time.RFC1123),
+		request.Time.Format(MyDateTimeFormat),
 	)
 
 	return c.Send(msg)

@@ -46,7 +46,7 @@ func SetupCommands(bot *telebot.Bot, requestService *services.RequestService) {
 }
 
 func StartHandler(c telebot.Context) error {
-    return c.Send("Вас приветствует бот для оставления заявок на проблемы внутри Политехнического университета! Спасибо, что выбрали нас! Для оставления заявки напиши /report")
+    return c.Send("Вас приветствует бот для оставления заявок на проблемы внутри Политехнического университета!  Для создания заявки напишите /report")
 }
 
 func ReportHandler(c telebot.Context) error {
@@ -68,5 +68,5 @@ func GetStatusHandler(c telebot.Context) error {
 }
 
 func HelpHandler(c telebot.Context) error {
-    return c.Send("Сервис по оставлению заявок на проблемы внутри Политеха! Введите команду /report для того, чтобы оставить вашу заявку, /status для получения статуса вашей заявки, /help для получения помощи по работе с ботом")
+    return c.Send("Сервис по оставлению заявок на проблемы внутри Политеха! \nДоступные команды:\n/report для оставления заявки,\n/status для получения статуса заявки,\n/help для получения помощи по работе с ботом")
 }
