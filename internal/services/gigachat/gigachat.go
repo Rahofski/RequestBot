@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"fixitpolytech/internal/config"
 )
 
 func GetAccessToken() string{
@@ -48,7 +49,7 @@ func GetAccessToken() string{
 	data.Set("scope", "GIGACHAT_API_PERS")
 
 	// Формируем запрос
-	url := "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
+	url := config.Auth_URL
 	req, err := http.NewRequest(http.MethodPost, url, nil)
 	if err != nil {
 		fmt.Println("Ошибка создания запроса:", err)
@@ -106,7 +107,10 @@ func ExtractAccessToken(response string) string {
 	return tokenData.AccessToken
 }
 
-func DefineField(message string ,accessToken string) (int, error) { 
+func DefineField(message string ,accessToken string) (int, error) {
+
+	url := config.Gigahat_URL
+	
 	cwd, err := os.Getwd()
 	if err != nil {
 		fmt.Println("Ошибка получения рабочей директории:", err)
@@ -138,14 +142,27 @@ func DefineField(message string ,accessToken string) (int, error) {
 
 	method := http.MethodPost
 
-	url := "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
   
 	payload := fmt.Sprintf(`{
 		"model": "GigaChat",
 		"messages": [
 		  {
 			"role": "system",
-			"content": "Ты - професстональный определитель сферы заявки. Твоя задача - определить, к какой категории относится заявка. Доступные категории: Сантехника , Электричество , Инфраструктура , Компьютеры, Плотничество. В качестве ответа верни одно слово только из этих вариантов!"
+			"content": "Ты - профессиональный определитель сферы заявки. Твоя задача - определить, 
+						к какой категории относится заявка. Доступные категории только эти (ничего другого не предлагай):
+						1. Сантехника - если проблема с водой, трубами, сантехникой
+						2. Электричество - если проблема с электроприборами, проводкой, освещением
+						3. Инфраструктура - если проблема с дверями, окнами, стенами, крышей
+						4. Компьютеры - если проблема с компьютерами, оргтехникой, сетью
+						5. Плотничество - если проблема с мебелью, деревянными конструкциями
+
+						Ответь только одним словом из указанных категорий без каких-либо пояснений!
+						Примеры:
+						- "Протекает кран в туалете" → Сантехника
+						- "Не работает розетка в кабинете 203" → Электричество
+						- "Сломалась дверная ручка" → Инфраструктура
+						- "Не включается компьютер" → Компьютеры
+						- "Развалился шкаф в коридоре" → Плотничество"
 		  },
 		  {
 			"role": "user",
@@ -225,7 +242,7 @@ func CheckIfValid(message string ,accessToken string) (bool, error) {
 
 	method := http.MethodPost
 
-	url := "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
+	url := config.Gigahat_URL
   
 	payload := fmt.Sprintf(`{
 		"model": "GigaChat",

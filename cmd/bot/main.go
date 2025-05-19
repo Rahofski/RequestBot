@@ -7,7 +7,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"gopkg.in/telebot.v3"
-
+	"fixitpolytech/internal/config"
 	"fixitpolytech/internal/handlers"
 	"fixitpolytech/internal/services"
 )
@@ -23,6 +23,12 @@ func main() {
 
 	if token == "" {
 		log.Fatal("TOKEN не найден!")
+	}
+
+	err = config.Init()
+
+	if err != nil {
+		log.Fatal("Ошибка инициализации конфигурации:", err)
 	}
 
 	settings := telebot.Settings{
