@@ -13,22 +13,33 @@ import (
 )
 
 func main() {
-	// Загружаем переменные окружения из .env
-	err := godotenv.Load("../../.env") // Указываем путь к файлу .env из cmd/bot
-	if err != nil {
-		log.Fatal("Ошибка загрузки .env файла")
+	// Try to load .env file from multiple locations
+	envLocations := []string{
+		"/app/.env",    // Docker container location
+		"./.env",       // Local development
+		"../../.env",   // Alternative local path
+	}
+	
+	var envLoaded bool
+	for _, loc := range envLocations {
+		if err := godotenv.Load(loc); err == nil {
+			envLoaded = true
+			break
+		}
+	}
+	
+	if !envLoaded {
+		log.Println("Warning: No .env file found, relying on environment variables")
 	}
 
 	token := os.Getenv("TOKEN")
-
 	if token == "" {
-		log.Fatal("TOKEN не найден!")
+		log.Fatal("TOKEN not found in environment variables!")
 	}
 
-	err = config.Init()
-
+	err := config.Init()
 	if err != nil {
-		log.Fatal("Ошибка инициализации конфигурации:", err)
+		log.Fatal("Configuration initialization error:", err)
 	}
 
 	settings := telebot.Settings{
@@ -36,15 +47,14 @@ func main() {
 		Poller: &telebot.LongPoller{Timeout: 10 * time.Second},
 	}
 
-	// Создаём бота
+	// Create bot
 	bot, err := telebot.NewBot(settings)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	requestService := services.NewRequestService()
-    handlers.SetupCommands(bot, requestService)
+	handlers.SetupCommands(bot, requestService)
 
 	bot.Start()
-
 }

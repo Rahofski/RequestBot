@@ -16,11 +16,9 @@ var (
 
 
 func Init () error {
-    err := godotenv.Load("../../.env")
-
-    if err != nil {
-		log.Println("No .env file found, using environment variables")
-        return err
+    if err := godotenv.Load("../../.env"); err != nil {
+		// Если не найден — пробуем из текущей директории (актуально для Docker)
+		_ = godotenv.Load(".env")
 	}
 
     Backend_URL = os.Getenv("BACKEND_URL")
