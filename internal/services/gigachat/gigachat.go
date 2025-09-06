@@ -4,16 +4,16 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
+	"fixitpolytech/internal/config"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
-	"fixitpolytech/internal/config"
 )
 
-func GetAccessToken() string{
+func GetAccessToken() string {
 
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -83,7 +83,6 @@ func GetAccessToken() string{
 	return ExtractAccessToken(string(body))
 }
 
-
 func ExtractAccessToken(response string) string {
 	// Структура для хранения данных из JSON
 	type TokenResponse struct {
@@ -103,32 +102,31 @@ func ExtractAccessToken(response string) string {
 		return ""
 	}
 
-
 	return tokenData.AccessToken
 }
 
-func DefineField(message string ,accessToken string) (int, error) {
+func DefineField(message string, accessToken string) (int, error) {
 
 	url := config.Gigahat_URL
-	
+
 	cwd, err := os.Getwd()
 	if err != nil {
 		fmt.Println("Ошибка получения рабочей директории:", err)
-		return -1, err 
+		return -1, err
 	}
 
 	// Загружаем публичный сертификат Минцифры
 	rootCA, err := os.ReadFile(cwd + "\\russian_trusted_root_ca.pem")
 	if err != nil {
 		fmt.Println("Ошибка чтения сертификата:", err)
-		return -1, err 
+		return -1, err
 	}
 
 	// Создаём кастомный пул доверенных сертификатов
 	certPool := x509.NewCertPool()
 	if !certPool.AppendCertsFromPEM(rootCA) {
 		fmt.Println("Ошибка добавления сертификата в пул")
-		return -1, err  
+		return -1, err
 	}
 
 	// Создаём HTTP-клиент с кастомными сертификатами
@@ -142,7 +140,6 @@ func DefineField(message string ,accessToken string) (int, error) {
 
 	method := http.MethodPost
 
-  
 	payload := fmt.Sprintf(`{
 		"model": "GigaChat",
 		"messages": [
@@ -158,30 +155,30 @@ func DefineField(message string ,accessToken string) (int, error) {
 		"stream": false,
 		"update_interval": 0
 	}`, message)
-  
+
 	req, err := http.NewRequest(method, url, strings.NewReader(payload))
-  
+
 	if err != nil {
-	  fmt.Println(err)
-	  return -1, err 
+		fmt.Println(err)
+		return -1, err
 	}
 
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Authorization", "Bearer " + accessToken)
-  
+	req.Header.Add("Authorization", "Bearer "+accessToken)
+
 	res, err := client.Do(req)
 	if err != nil {
-	  fmt.Println(err)
-	  return -1, err 
+		fmt.Println(err)
+		return -1, err
 	}
 
 	defer res.Body.Close()
-  
+
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-	  fmt.Println(err)
-	  return -1, err 
+		fmt.Println(err)
+		return -1, err
 	}
 
 	fmt.Println("Ответ сервера:", string(body))
@@ -189,13 +186,12 @@ func DefineField(message string ,accessToken string) (int, error) {
 	answer, err := ParseDefineField(body)
 	if err != nil {
 		fmt.Println(err)
-		return -1, err 
+		return -1, err
 	}
 	return answer, nil
 }
 
-
-func CheckIfValid(message string ,accessToken string) (bool, error) { 
+func CheckIfValid(message string, accessToken string) (bool, error) {
 
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -207,14 +203,14 @@ func CheckIfValid(message string ,accessToken string) (bool, error) {
 	rootCA, err := os.ReadFile(cwd + "\\russian_trusted_root_ca.pem")
 	if err != nil {
 		fmt.Println("Ошибка чтения сертификата:", err)
-		return false, err 
+		return false, err
 	}
 
 	// Создаём кастомный пул доверенных сертификатов
 	certPool := x509.NewCertPool()
 	if !certPool.AppendCertsFromPEM(rootCA) {
 		fmt.Println("Ошибка добавления сертификата в пул")
-		return false, err 
+		return false, err
 	}
 
 	// Создаём HTTP-клиент с кастомными сертификатами
@@ -229,7 +225,7 @@ func CheckIfValid(message string ,accessToken string) (bool, error) {
 	method := http.MethodPost
 
 	url := config.Gigahat_URL
-  
+
 	payload := fmt.Sprintf(`{
 		"model": "GigaChat",
 		"messages": [
@@ -245,30 +241,30 @@ func CheckIfValid(message string ,accessToken string) (bool, error) {
 		"stream": false,
 		"update_interval": 0
 	}`, message)
-  
+
 	req, err := http.NewRequest(method, url, strings.NewReader(payload))
-  
+
 	if err != nil {
-	  fmt.Println(err)
-	  return false, err
+		fmt.Println(err)
+		return false, err
 	}
 
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Authorization", "Bearer " + accessToken)
-  
+	req.Header.Add("Authorization", "Bearer "+accessToken)
+
 	res, err := client.Do(req)
 	if err != nil {
-	  fmt.Println(err)
-	  return false, err
+		fmt.Println(err)
+		return false, err
 	}
 
 	defer res.Body.Close()
-  
+
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-	  fmt.Println(err)
-	  return false, err
+		fmt.Println(err)
+		return false, err
 	}
 
 	answer, err := ParseIfValidResponse(body)
@@ -277,9 +273,9 @@ func CheckIfValid(message string ,accessToken string) (bool, error) {
 		return false, err
 	}
 	return answer, nil
-  }
+}
 
-  type GigaChatResponse struct {
+type GigaChatResponse struct {
 	Choices []struct {
 		Message struct {
 			Content string `json:"content"`
